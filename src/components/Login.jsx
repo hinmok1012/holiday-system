@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { auth } from "../firebase";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function Login({ setUser }) {
   const [email, setEmail] = useState("");
@@ -8,29 +8,19 @@ export default function Login({ setUser }) {
 
   const login = async () => {
     try {
-      const res = await signInWithEmailAndPassword(auth, email, password);
-      setUser(res.user);
-    } catch (e) {
-      alert(e.message);
-    }
-  };
-
-  const signup = async () => {
-    try {
-      const res = await createUserWithEmailAndPassword(auth, email, password);
-      setUser(res.user);
-    } catch (e) {
-      alert(e.message);
+      const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password.trim());
+      setUser(userCredential.user);
+    } catch (error) {
+      alert("登入失敗: " + error.message);
     }
   };
 
   return (
     <div>
-      <h2>登入 / 註冊</h2>
-      <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
+      <h2>登入</h2>
+      <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
       <input type="password" placeholder="密碼" value={password} onChange={e => setPassword(e.target.value)} />
       <button onClick={login}>登入</button>
-      <button onClick={signup}>註冊</button>
     </div>
   );
 }

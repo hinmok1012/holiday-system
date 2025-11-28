@@ -8,14 +8,11 @@ import Dashboard from "./components/Dashboard";
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [role, setRole] = useState("employee"); // 員工預設
+  const [role, setRole] = useState("employee");
 
-  // 登入後自動判斷角色
   const handleLogin = (user) => {
     setUser(user);
-
-    // 這裡判斷誰是主管，改成你的主管 email
-    const managerEmails = ["manager@example.com"];
+    const managerEmails = ["manager@example.com"]; // 可自行修改
     if (managerEmails.includes(user.email)) {
       setRole("manager");
     } else {
@@ -28,7 +25,7 @@ export default function App() {
   return (
     <div style={{ padding: 20, fontFamily: "Arial" }}>
       <h1>假期系統</h1>
-      <p>登入者: {user.email}</p>
+      <p>登入者: {user.email} | 角色: {role}</p>
 
       {role === "employee" && (
         <>
@@ -37,11 +34,19 @@ export default function App() {
         </>
       )}
 
-      {role === "manager" && <ApproveList />}
+      {role === "manager" && (
+        <>
+          <ApproveList />
+          <Dashboard />
+        </>
+      )}
 
-      <Dashboard />
-
-      <button onClick={() => auth.signOut().then(() => setUser(null))}>
+      <button
+        onClick={() =>
+          auth.signOut().then(() => setUser(null))
+        }
+        style={{ marginTop: 20 }}
+      >
         登出
       </button>
     </div>

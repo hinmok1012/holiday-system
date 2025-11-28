@@ -17,8 +17,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+//const analytics = getAnalytics(app);
 
-// 匯出 Auth 和 Firestore
 export const auth = getAuth(app);
 export const db = getFirestore(app);

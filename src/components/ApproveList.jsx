@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { collection, query, where, onSnapshot, updateDoc, doc, orderBy } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, doc, updateDoc } from "firebase/firestore";
 
 export default function ApproveList() {
   const [leaves, setLeaves] = useState([]);
 
   useEffect(() => {
-    const q = query(collection(db, "leaves"), where("status", "==", "Pending"), orderBy("createdAt", "asc"));
+    const q = query(collection(db, "leaves"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, snapshot => {
       setLeaves(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
-    return unsubscribe;
+    return () => unsubscribe();
   }, []);
 
   const approve = async (id) => {
@@ -23,12 +23,16 @@ export default function ApproveList() {
 
   return (
     <div>
-      <h3>待審批申請</h3>
+      <h3>主管審批</h3>
       {leaves.map(l => (
-        <div key={l.id}>
-          {l.name} - {l.date} - {l.type} - {l.status}
-          <button onClick={() => approve(l.id)}>Approve</button>
-          <button onClick={() => reject(l.id)}>Reject</button>
+        <div key={l.id} style={{ marginBottom: 10 }}>
+          {l.name} | {l.date} | {l.type} | {l.status}
+          {l.status === "Pending" && (
+            <>
+              <button onClick={() => approve(l.id)}>通過</button>
+              <button onClick={() => reject(l.id)}>拒絕</button>
+            </>
+          )}
         </div>
       ))}
     </div>

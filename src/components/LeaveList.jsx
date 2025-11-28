@@ -8,33 +8,24 @@ export default function LeaveList({ user }) {
   useEffect(() => {
     if (!user || !user.email) return;
 
-    // 建立即時監聽 query
     const q = query(
       collection(db, "leaves"),
       where("name", "==", user.email),
       orderBy("createdAt", "desc")
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const leaveData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+    const unsubscribe = onSnapshot(q, snapshot => {
+      const leaveData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setLeaves(leaveData);
-    }, (error) => {
-      console.error("Firestore onSnapshot error:", error);
     });
 
-    // 組件卸載時取消監聽
     return () => unsubscribe();
   }, [user]);
 
   return (
-    <div style={{ marginTop: 20 }}>
+    <div>
       <h3>我的假期申請</h3>
-      {leaves.length === 0 ? (
-        <p>尚無申請紀錄</p>
-      ) : (
+      {leaves.length === 0 ? <p>尚無申請紀錄</p> :
         <table border="1" cellPadding="5" style={{ borderCollapse: "collapse" }}>
           <thead>
             <tr>
@@ -53,7 +44,7 @@ export default function LeaveList({ user }) {
             ))}
           </tbody>
         </table>
-      )}
+      }
     </div>
   );
 }
