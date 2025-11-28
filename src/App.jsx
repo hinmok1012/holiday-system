@@ -1,50 +1,49 @@
 import { useState } from "react";
+import { auth } from "./firebase";
+import Login from "./components/Login";
+import LeaveForm from "./components/LeaveForm";
+import LeaveList from "./components/LeaveList";
+import ApproveList from "./components/ApproveList";
+import Dashboard from "./components/Dashboard";
 
 export default function App() {
-  const [requests, setRequests] = useState([]);
-  const [type, setType] = useState("VL");
-  const [name, setName] = useState("");
+  const [user, setUser] = useState(null);
+  const [role, setRole] = useState("employee"); // 員工預設
 
-  function submitRequest() {
-    if (!name) return alert("請輸入員工名稱");
-    setRequests([...requests, { name, type }]);
-    setName("");
-  }
+  // 登入後自動判斷角色
+  const handleLogin = (user) => {
+    setUser(user);
+
+    // 這裡判斷誰是主管，改成你的主管 email
+    const managerEmails = ["manager@example.com"];
+    if (managerEmails.includes(user.email)) {
+      setRole("manager");
+    } else {
+      setRole("employee");
+    }
+  };
+
+  if (!user) return <Login setUser={handleLogin} />;
 
   return (
     <div style={{ padding: 20, fontFamily: "Arial" }}>
-      <h1>假期申請系統</h1>
+      <h1>假期系統</h1>
+      <p>登入者: {user.email}</p>
 
-      <div style={{ marginBottom: 20 }}>
-        <input
-          placeholder="員工名稱"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          style={{ marginRight: 10 }}
-        />
+      {role === "employee" && (
+        <>
+          <LeaveForm user={user} />
+          <LeaveList user={user} />
+        </>
+      )}
 
-        <select value={type} onChange={(e) => setType(e.target.value)} style={{ marginRight: 10 }}>
-          <option value="VL">VL</option>
-          <option value="CL">CL</option>
-          <option value="ROTA">ROTA</option>
-          <option value="SL">SL</option>
-          <option value="AA">AA</option>
-          <option value="ASVL">ASVL</option>
-          <option value="SD">SD</option>
-          <option value="Course">Course</option>
-          <option value="Other">Other</option>
-        </select>
+      {role === "manager" && <ApproveList />}
 
-        <button onClick={submitRequest}>送出申請</button>
-      </div>
+      <Dashboard />
 
-      <h2>申請列表</h2>
-      {requests.length === 0 && <p>目前沒有申請</p>}
-      {requests.map((r, i) => (
-        <div key={i} style={{ border: "1px solid #ddd", padding: 8, margin: 4 }}>
-          <strong>{r.name}</strong> — {r.type}
-        </div>
-      ))}
+      <button onClick={() => auth.signOut().then(() => setUser(null))}>
+        登出
+      </button>
     </div>
   );
 }
