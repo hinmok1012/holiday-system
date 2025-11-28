@@ -10,17 +10,34 @@ export default function Login({ setUser }) {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password.trim());
       setUser(userCredential.user);
-    } catch (error) {
-      alert("登入失敗：" + error.message);
+    } catch (err) {
+      alert("登入失敗：" + err.message);
     }
   };
 
   return (
-    <div>
-      <h2>登入</h2>
-      <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
-      <input type="password" placeholder="密碼" value={password} onChange={e => setPassword(e.target.value)} />
-      <button onClick={login}>登入</button>
+    <div className="flex flex-col gap-2 max-w-md mx-auto p-4">
+      <h2 className="text-xl font-semibold mb-2">登入</h2>
+      <input
+        type="email"
+        placeholder="Email"
+        className="border p-2 rounded w-full"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+      />
+      <input
+        type="password"
+        placeholder="密碼"
+        className="border p-2 rounded w-full"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+      />
+      <button
+        onClick={login}
+        className="bg-blue-500 text-white py-2 rounded mt-2"
+      >
+        登入
+      </button>
     </div>
   );
 }

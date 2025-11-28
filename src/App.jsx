@@ -29,9 +29,9 @@ export default function App() {
   if (!user) return <Login setUser={handleLogin} />;
 
   return (
-    <div style={{ padding: 20, fontFamily: "Arial" }}>
-      <h1>假期系統</h1>
-      <p>登入者: {user.email} | 角色: {role}</p>
+    <div className="max-w-md mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-2 text-center">假期系統</h1>
+      <p className="mb-4 text-center">登入者: {user.email} | 角色: {role}</p>
 
       {role === "employee" && (
         <>
@@ -42,13 +42,16 @@ export default function App() {
 
       {role === "manager" && (
         <>
-          <ApproveList />
           <Dashboard />
+          <ApproveList />
           <RoleManager />
         </>
       )}
 
-      <button onClick={() => auth.signOut().then(() => setUser(null))} style={{ marginTop: 20 }}>
+      <button
+        onClick={() => auth.signOut().then(() => setUser(null))}
+        className="mt-4 w-full bg-red-500 text-white py-2 rounded"
+      >
         登出
       </button>
     </div>

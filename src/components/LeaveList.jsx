@@ -1,50 +1,29 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 export default function LeaveList({ user }) {
   const [leaves, setLeaves] = useState([]);
 
   useEffect(() => {
-    if (!user || !user.email) return;
-
-    const q = query(
-      collection(db, "leaves"),
-      where("name", "==", user.email),
-      orderBy("createdAt", "desc")
-    );
-
+    const q = query(collection(db, "leaves"), where("userEmail", "==", user.email));
     const unsubscribe = onSnapshot(q, snapshot => {
-      const leaveData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setLeaves(leaveData);
+      setLeaves(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
-
     return () => unsubscribe();
-  }, [user]);
+  }, [user.email]);
 
   return (
-    <div>
-      <h3>我的假期申請</h3>
-      {leaves.length === 0 ? <p>尚無申請紀錄</p> :
-        <table border="1" cellPadding="5" style={{ borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th>日期</th>
-              <th>假期類型</th>
-              <th>狀態</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leaves.map(l => (
-              <tr key={l.id}>
-                <td>{l.date}</td>
-                <td>{l.type}</td>
-                <td>{l.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      }
+    <div className="mb-4">
+      <h3 className="text-lg font-semibold mb-2">我的假期</h3>
+      <div className="flex flex-col gap-2">
+        {leaves.length === 0 && <p>尚無假期申請</p>}
+        {leaves.map(l => (
+          <div key={l.id} className="flex justify-between items-center border p-2 rounded">
+            <span>{l.date} | {l.type} | {l.status}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
