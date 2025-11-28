@@ -11,7 +11,7 @@ export default function Login({ setUser }) {
       const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password.trim());
       setUser(userCredential.user);
     } catch (error) {
-      alert("登入失敗: " + error.message);
+      alert("登入失敗：" + error.message);
     }
   };
 
